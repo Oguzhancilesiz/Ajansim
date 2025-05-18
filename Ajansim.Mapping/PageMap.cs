@@ -21,12 +21,6 @@ namespace Ajansim.Mapping
             builder.Property(x => x.MetaKeyword).HasMaxLength(200);
             builder.Property(x => x.SubTitle).HasMaxLength(200);
 
-
-            //navigatiıon property
-            builder.HasMany(x => x.MediaFiles)
-              .WithOne(x => x.Page)
-              .HasForeignKey(x => x.PageId)
-              .OnDelete(DeleteBehavior.Cascade); // Page silinince Medialar da silinir
         }
     }
 }

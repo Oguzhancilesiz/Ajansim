@@ -19,11 +19,6 @@ namespace Ajansim.Mapping
             builder.Property(x => x.Content).IsRequired();
             builder.Property(x => x.PublishedAt).IsRequired();
 
-            // Blog → Media (1-many)
-            builder.HasMany(x => x.MediaFiles)
-                .WithOne(x => x.BlogPost)
-                .HasForeignKey(x => x.BlogPostId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             // Blog → Category (many-to-1)
             builder.HasOne(x => x.Category)

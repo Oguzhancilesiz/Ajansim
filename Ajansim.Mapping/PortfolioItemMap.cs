@@ -28,11 +28,6 @@ namespace Ajansim.Mapping
                    .HasForeignKey(x => x.TeamMemberId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // PortfolioItem → Media (one-to-many)
-            builder.HasMany(x => x.MediaFiles)
-                   .WithOne(x => x.PortfolioItem)
-                   .HasForeignKey(x => x.PortfolioItemId)
-                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

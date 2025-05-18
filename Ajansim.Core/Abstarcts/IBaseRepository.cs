@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,8 @@ namespace Ajansim.Core.Abstarcts
         T GetBy(Func<T, bool> exp);
         T GetById(object id);
         List<T> GetAll();
-        List<T> GetAllFilter(Func<T, bool> exp);
+        List<T> GetAllFilter(Func<T, bool> exp, Func<IQueryable<T>, IIncludableQueryable<
+    T, object>> include = null);
 
     }
 }

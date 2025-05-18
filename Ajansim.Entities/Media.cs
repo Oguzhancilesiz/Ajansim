@@ -20,16 +20,16 @@ namespace Ajansim.Entities
         public Guid? PageId { get; set; }
         public Page Page { get; set; }
 
-        public int? ServiceId { get; set; }
+        public Guid? ServiceId { get; set; }
         public Service Service { get; set; }
 
-        public int? TeamMemberId { get; set; }
+        public Guid? TeamMemberId { get; set; }
         public TeamMember TeamMember { get; set; }
 
-        public int? PortfolioItemId { get; set; }
+        public Guid? PortfolioItemId { get; set; }
         public PortfolioItem PortfolioItem { get; set; }
 
-        public int? BlogPostId { get; set; }
+        public Guid? BlogPostId { get; set; }
         public BlogPost BlogPost { get; set; }
     }
 }

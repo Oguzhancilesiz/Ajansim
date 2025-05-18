@@ -13,6 +13,7 @@ namespace Ajansim.Core.Abstarcts
     {
         //[Key]
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public Guid ID { get; set; } /*= new Guid();   */                        // ID (Primary Key)
         public DateTime CreatedAt { get; set; } = DateTime.Now; // Oluşturulma tarihi
         public DateTime? UpdatedAt { get; set; }                // Güncellenme tarihi

@@ -12,7 +12,7 @@ namespace Ajansim.Entities
         public string Title { get; set; }                       // Proje başlığı
         public string Description { get; set; }                 // Açıklama
 
-        public int TeamMemberId { get; set; }                   // Hangi ekip üyesine ait
+        public Guid? TeamMemberId { get; set; }                   // Hangi ekip üyesine ait
         public TeamMember TeamMember { get; set; }
 
         public ICollection<Media> MediaFiles { get; set; }           // Proje görselleri

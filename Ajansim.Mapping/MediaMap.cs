@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace Ajansim.Mapping
 {
-   public class MediaMap: BaseMap<Media>
+    public class MediaMap : BaseMap<Media>
     {
         public override void Configure(EntityTypeBuilder<Media> builder)
         {
+            base.Configure(builder);
+
             builder.Property(x => x.FileName)
-                   .IsRequired()
-                   .HasMaxLength(200);
+                   .IsRequired().HasMaxLength(200);
 
             builder.Property(x => x.Url)
-                   .IsRequired()
-                   .HasMaxLength(500);
+                   .IsRequired().HasMaxLength(500);
 
             builder.Property(x => x.AltText)
                    .HasMaxLength(200);
@@ -30,36 +30,30 @@ namespace Ajansim.Mapping
             builder.Property(x => x.MediaType)
                    .IsRequired();
 
-            // Page ile ilişki
             builder.HasOne(x => x.Page)
                    .WithMany(x => x.MediaFiles)
                    .HasForeignKey(x => x.PageId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // Service ile ilişki
             builder.HasOne(x => x.Service)
                    .WithMany(x => x.MediaFiles)
                    .HasForeignKey(x => x.ServiceId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // TeamMember ile ilişki
             builder.HasOne(x => x.TeamMember)
                    .WithMany(x => x.MediaFiles)
                    .HasForeignKey(x => x.TeamMemberId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // PortfolioItem ile ilişki
             builder.HasOne(x => x.PortfolioItem)
                    .WithMany(x => x.MediaFiles)
                    .HasForeignKey(x => x.PortfolioItemId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // BlogPost ile ilişki
             builder.HasOne(x => x.BlogPost)
                    .WithMany(x => x.MediaFiles)
                    .HasForeignKey(x => x.BlogPostId)
-                   .OnDelete(DeleteBehavior.Cascade);
-            base.Configure(builder);
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

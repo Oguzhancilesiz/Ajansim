@@ -38,12 +38,6 @@ namespace Ajansim.Mapping
             builder.Property(x => x.Gmail)
                    .HasMaxLength(100);
 
-            // TeamMember → Media (1 - N)
-            builder.HasMany(x => x.MediaFiles)
-                   .WithOne(x => x.TeamMember)
-                   .HasForeignKey(x => x.TeamMemberId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
             // TeamMember → PortfolioItem (1 - N)
             builder.HasMany(x => x.PortfolioItems)
                    .WithOne(x => x.TeamMember)
