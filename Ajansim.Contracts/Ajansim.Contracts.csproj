@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Ajansim.Core\Ajansim.Core.csproj" />
+    <ProjectReference Include="..\Ajansim.Entities\Ajansim.Entities.csproj" />
+  </ItemGroup>
+
 </Project>

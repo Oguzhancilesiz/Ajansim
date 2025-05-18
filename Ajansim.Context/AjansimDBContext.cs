@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Ajansim.Context
 {
-    class AjansimDBContext : DbContext
+    public class AjansimDBContext : DbContext
     {
 
         public DbSet<BlogPost> BlogPosts { get; set; }

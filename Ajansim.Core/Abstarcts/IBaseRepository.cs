@@ -13,8 +13,8 @@ namespace Ajansim.Core.Abstarcts
         void Update(T item);
         void Delete(T item);
         T GetBy(Func<T, bool> exp);
-        T GetById(object id);
-        List<T> GetAll();
+        T GetById(Guid id);
+        IQueryable<T> GetAll();
         List<T> GetAllFilter(Func<T, bool> exp, Func<IQueryable<T>, IIncludableQueryable<
     T, object>> include = null);
 
