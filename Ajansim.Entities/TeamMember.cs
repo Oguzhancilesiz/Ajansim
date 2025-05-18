@@ -19,7 +19,7 @@ namespace Ajansim.Entities
         public string YouTube { get; set; }
         public string Gmail { get; set; }
 
-        public ICollection<Media> Media { get; set; }           // Profil görselleri
+        public ICollection<Media> MediaFiles { get; set; }           // Profil görselleri
         public ICollection<PortfolioItem> PortfolioItems { get; set; } // Yaptığı işler
     }
 }

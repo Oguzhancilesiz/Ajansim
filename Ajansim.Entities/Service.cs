@@ -12,6 +12,6 @@ namespace Ajansim.Entities
         public string Title { get; set; }                       // Hizmet adı
         public string Description { get; set; }                 // Açıklama
 
-        public ICollection<Media> Media { get; set; }           // Hizmete ait medya
+        public ICollection<Media> MediaFiles { get; set; }           // Hizmete ait medya
     }
 }

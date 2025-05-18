@@ -1,16 +1,23 @@
-﻿using System;
+﻿using Ajansim.Core.Abstarcts;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Ajansim.Entities
 {
-   public class ContactForm
+    public class ContactForm : BaseEntity
     {
 
-        public string FullName { get; set; }                    // Ad Soyad
-        public string Email { get; set; }                       // E-posta
-        public string Message { get; set; }                     // Mesaj içeriği
+        [Required, MaxLength(100)]
+        public string FullName { get; set; }
+
+        [Required, EmailAddress, MaxLength(100)]
+        public string Email { get; set; }
+
+        [Required, MaxLength(500)]
+        public string Message { get; set; }
     }
 }
