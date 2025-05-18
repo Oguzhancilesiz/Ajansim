@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Ajansim.Entities
 {
-    class Media : BaseEntity
+    public class Media : BaseEntity
     {
         public string FileName { get; set; }          // Özgün ad (örnek: belge1.docx)
         public string Url { get; set; }               // Sunucu yolu veya CDN
