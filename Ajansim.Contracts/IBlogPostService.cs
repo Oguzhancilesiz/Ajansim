@@ -1,4 +1,5 @@
 ﻿using Ajansim.Core.Abstarcts;
+using Ajansim.DTO;
 using Ajansim.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,5 +11,7 @@ namespace Ajansim.Contracts
 {
     public interface IBlogPostService : IBaseRepository<BlogPost>
     {
+        List<BlogPostDTO> GetAllDTO();
+        BlogPostDTO GetByIdDTO(Guid id);
     }
 }

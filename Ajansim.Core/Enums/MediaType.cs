@@ -12,6 +12,7 @@ namespace Ajansim.Core.Enums
         Video = 2,     // mp4, mov, avi
         Document = 3,  // pdf, docx, txt, pptx
         Audio = 4,     // mp3, wav
+        Files = 5,     // Dosya
         Other = 99     // tanımsız veya özel türler
     }
 }

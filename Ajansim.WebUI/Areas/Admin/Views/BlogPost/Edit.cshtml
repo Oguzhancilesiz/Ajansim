@@ -1,0 +1,107 @@
+﻿@model Ajansim.Entities.BlogPost
+
+@{
+    ViewBag.Title = "Blog Yazısını Güncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var mediaFiles = (List<Ajansim.Entities.Media>)ViewBag.MediaFiles;
+    var categories = (List<SelectListItem>)ViewBag.Categories;
+}
+
+<h2>Blog Yazısı Güncelle</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ID" />
+
+    <div class="mb-3">
+        <label accesskey="" class="form-label">Başlık</label>
+        <input asp-for="Title" name="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Summary" class="form-label">Özet</label>
+        <textarea asp-for="Summary" name="Summary" class="form-control" rows="2"></textarea>
+        <span asp-validation-for="Summary" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label">İçerik</label>
+        <textarea asp-for="Content" name="Content" class="form-control" rows="6"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <select name="CategoryId" class="form-select">
+        <option value="">Kategori Seçin</option> <!-- value="" önemli -->
+        @foreach (var item in (List<SelectListItem>)ViewBag.Categories)
+        {
+            var isSelected = item.Value == Model?.CategoryId.ToString() ? "selected" : "";
+            <option value="@item.Value" @isSelected>@item.Text</option>
+        }
+    </select>
+    <span asp-validation-for="CategoryId" class="text-danger"></span>
+
+
+
+
+
+
+
+
+    <div class="mb-3">
+        <label class="form-label">Görsel Yükle (birden fazla seçebilirsiniz)</label>
+        <input type="file" name="files" multiple class="form-control" />
+    </div>
+
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">Kaydet</button>
+    </div>
+
+    <h5>Mevcut Görseller</h5>
+    <div class="d-flex flex-wrap gap-3 mb-3" id="media-gallery">
+        @foreach (var media in mediaFiles)
+        {
+            <div class="position-relative border rounded p-1" id="media-@media.ID">
+                <img src="@media.Url" width="100" class="img-thumbnail" />
+                <button type="button"
+                        class="btn btn-sm btn-danger position-absolute top-0 end-0 delete-media"
+                        data-id="@media.ID">
+                    ✖
+                </button>
+            </div>
+        }
+    </div>
+
+ 
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".delete-media").forEach(button => {
+            button.addEventListener("click", function () {
+                const mediaId = this.getAttribute("data-id");
+
+                fetch('@Url.Action("DeleteMedia", "BlogPost", new { area = "Admin" })', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector("input[name=__RequestVerificationToken]").value
+                    },
+                    body: JSON.stringify({ mediaId: mediaId })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const target = document.getElementById("media-" + mediaId);
+                            target.remove();
+                        } else {
+                            alert("Silinemedi.");
+                        }
+                    });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,116 @@
+﻿@model Ajansim.Entities.BlogPost
+
+@{
+    ViewBag.Title = "Yeni Blog Yazısı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="mb-4">Yeni Blog Yazısı Ekle</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label accesskey="" class="form-label">Başlık</label>
+        <input asp-for="Title" name="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Summary" class="form-label">Özet</label>
+        <textarea asp-for="Summary" name="Summary" class="form-control" rows="2"></textarea>
+        <span asp-validation-for="Summary" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label">İçerik</label>
+        <textarea asp-for="Content" name="Content" class="form-control" rows="6"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <select name="CategoryId" class="form-select">
+        <option value="">Kategori Seçin</option> <!-- value="" önemli -->
+        @foreach (var item in (List<SelectListItem>)ViewBag.Categories)
+        {
+            var isSelected = item.Value == Model?.CategoryId.ToString() ? "selected" : "";
+            <option value="@item.Value" @isSelected>@item.Text</option>
+        }
+    </select>
+    <span asp-validation-for="CategoryId" class="text-danger"></span>
+
+
+
+
+
+
+
+
+    <div class="mb-3">
+        <label class="form-label">Görsel Yükle (birden fazla seçebilirsiniz)</label>
+        <input type="file" name="files" multiple class="form-control" />
+    </div>
+
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+@* @model Ajansim.Entities.BlogPost
+
+@{
+    ViewBag.Title = "Yeni Blog Yazısı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Başlık</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Summary" class="form-label">Özet</label>
+        <input asp-for="Summary" class="form-control" />
+        <span asp-validation-for="Summary" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label">İçerik</label>
+        <input asp-for="Content" class="form-control"></input>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label">Kategori</label>
+        <select name="CategoryId" class="form-select">
+            <option disabled @(Model.CategoryId == Guid.Empty ? "selected" : "")>Kategori Seçin</option>
+
+            @foreach (var item in ViewBag.Categories)
+            {
+                <option value="@item.Value" @(item.Value == Model.CategoryId.ToString() ? "selected" : "")>
+                    @item.Text
+                </option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span> ✅ olmalıydı
+
+    </div>
+
+   
+
+
+    <input type="file" name="File" multiple class="form-control" />
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+ *@

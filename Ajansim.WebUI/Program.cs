@@ -1,3 +1,6 @@
+using Ajansim.Contracts;
+using Ajansim.Services;
+
 namespace Ajansim.WebUI
 {
     public class Program
@@ -8,6 +11,10 @@ namespace Ajansim.WebUI
 
             // Add services to the container.
             builder.Services.AddRazorPages();
+            builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IMediaService, MediaService>();
+
 
             var app = builder.Build();
 
@@ -29,6 +36,18 @@ namespace Ajansim.WebUI
             app.MapRazorPages()
                .WithStaticAssets();
 
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "areas",
+                    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapRazorPages();
+            });
             app.Run();
         }
     }

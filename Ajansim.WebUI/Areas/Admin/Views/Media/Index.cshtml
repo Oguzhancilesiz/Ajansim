@@ -1,0 +1,37 @@
+﻿@using Ajansim.Core.Enums
+@using Ajansim.Entities
+@model List<Media>
+@{
+    ViewBag.Title = "Tüm Medyalar";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Medyalar</h2>
+
+<table class="table table-bordered align-middle text-center">
+    <thead>
+        <tr>
+            <th>Önizleme</th>
+            <th>Dosya Adı</th>
+            <th>Tür</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var media in Model)
+        {
+            <tr>
+                <td>
+
+                    <img src="@media.Url" alt="@media.AltText" style="max-width: 120px; max-height: 80px;" />
+                   
+                </td>
+                <td>@media.FileName</td>
+                <td>@media.MediaType.ToString()</td>
+                <td>
+                    <a asp-action="Delete" asp-route-id="@media.ID" class="btn btn-danger btn-sm">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,4 +1,5 @@
 ﻿using Ajansim.Core.Abstarcts;
+using Ajansim.Core.Enums;
 using Ajansim.Entities;
 using Ajansim.Mapping;
 using Microsoft.EntityFrameworkCore;
@@ -38,31 +39,51 @@ namespace Ajansim.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            //modelBuilder.ApplyConfiguration(new SiparisMap());
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BaseMap<BaseEntity>).Assembly);
 
             base.OnModelCreating(modelBuilder);
         }
-
         public override int SaveChanges()
         {
+            var entries = ChangeTracker.Entries<BaseEntity>();
 
-            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            foreach (var entry in entries)
             {
                 if (entry.State == EntityState.Added)
                 {
+                    if (entry.Entity.ID == Guid.Empty)
+                        entry.Entity.ID = Guid.NewGuid();
+
                     entry.Entity.CreatedAt = DateTime.Now;
-                    entry.Entity.Status = Core.Enums.Status.Active;
+                    entry.Entity.Status = Status.Active;
                 }
-                else if (entry.State == EntityState.Deleted && entry.State == EntityState.Modified)
+                else if (entry.State == EntityState.Modified)
                 {
                     entry.Entity.UpdatedAt = DateTime.Now;
                 }
-
             }
 
             return base.SaveChanges();
         }
+
+        //public override int SaveChanges()
+        //{
+
+        //    foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        //    {
+        //        if (entry.State == EntityState.Added)
+        //        {
+        //            entry.Entity.CreatedAt = DateTime.Now;
+        //            entry.Entity.Status = Core.Enums.Status.Active;
+        //        }
+        //        else if (entry.State == EntityState.Deleted && entry.State == EntityState.Modified)
+        //        {
+        //            entry.Entity.UpdatedAt = DateTime.Now;
+        //        }
+
+        //    }
+
+        //    return base.SaveChanges();
+        //}
     }
 }

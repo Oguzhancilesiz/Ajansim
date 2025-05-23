@@ -72,9 +72,10 @@ namespace Ajansim.Services
             }
             catch (Exception ex)
             {
-
-                throw new Exception(ex.Message);
+                // inner exception detayını da verelim:
+                throw new Exception("SaveChanges hatası: " + ex.InnerException?.Message ?? ex.Message, ex);
             }
         }
+
     }
 }
