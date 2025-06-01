@@ -1,0 +1,99 @@
+﻿@model Ajansim.WebUI.Areas.Admin.ViewModels.TeamMemberViewModel
+@{
+    ViewBag.Title = "Ekip Üyesi Güncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form class="upload-with-progress" method="post" enctype="multipart/form-data" action="/admin/teammember/edit">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ID" value="@Model.ID" />
+
+    <div class="mb-3">
+        <label class="form-label">Ad Soyad</label>
+        <input name="FullName" class="form-control" value="@Model.FullName" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Pozisyon</label>
+        <input name="Role" class="form-control" value="@Model.Role" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Biyografi</label>
+        <textarea name="Bio" class="form-control" rows="4">@Model.Bio</textarea>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">LinkedIn</label>
+            <input name="LinkedIn" class="form-control" value="@Model.LinkedIn" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">GitHub</label>
+            <input name="GitHub" class="form-control" value="@Model.GitHub" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">YouTube</label>
+            <input name="YouTube" class="form-control" value="@Model.YouTube" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Gmail</label>
+            <input name="Gmail" class="form-control" value="@Model.Gmail" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Yeni Profil Görselleri</label>
+        <input type="file" name="UploadedMedia" id="UploadedMedia" class="form-control" multiple />
+    </div>
+
+    @if (Model.MediaFiles != null && Model.MediaFiles.Any())
+    {
+        <div class="mb-3">
+            <label class="form-label">Mevcut Görseller</label>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var media in Model.MediaFiles)
+                {
+                    <div class="position-relative border p-1" id="media-@media.ID">
+                        <img src="@media.Url" width="80" class="img-thumbnail" />
+                        <button type="button"
+                                class="btn btn-sm btn-danger position-absolute top-0 end-0 delete-media"
+                                data-id="@media.ID">
+                            ✖
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+    <a href="/admin/teammember" class="btn btn-secondary">İptal</a>
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".delete-media").forEach(button => {
+            button.addEventListener("click", () => {
+                const id = button.dataset.id;
+                if (!confirm("Bu görseli silmek istiyor musunuz?")) return;
+
+                fetch("/admin/teammember/softdeletemedia", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(id)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("media-" + id)?.remove();
+                    } else {
+                        alert("Silinemedi.");
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,84 @@
+﻿@model List<Ajansim.WebUI.Areas.Admin.ViewModels.ServiceViewModel>
+@{
+    ViewBag.Title = "Hizmet Listesi";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Hizmet Listesi</h2>
+    <a href="/admin/service/create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Yeni Hizmet
+    </a>
+</div>
+
+<table class="table table-bordered align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>Başlık</th>
+            <th>Açıklama</th>
+            <th>Görseller</th>
+            <th>Oluşturulma</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="service-@item.ID">
+                <td>@item.Title</td>
+                <td>@item.Description</td>
+                <td>
+                    @if (item.MediaFiles != null && item.MediaFiles.Any())
+                    {
+                        <div class="d-flex gap-2">
+                            @foreach (var media in item.MediaFiles)
+                            {
+                                <img src="@media.Url" width="60" class="img-thumbnail border" />
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="text-muted">-</span>
+                    }
+                </td>
+                <td>@item.CreatedAt.ToString("dd.MM.yyyy")</td>
+                <td>
+                    <a href="/admin/service/edit/@item.ID" class="btn btn-sm btn-primary">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <button class="btn btn-sm btn-danger delete-service" data-id="@item.ID">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".delete-service").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.id;
+                if (!confirm("Bu hizmeti silmek istediğinize emin misiniz?")) return;
+
+                fetch("/admin/service/softdelete", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(id)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("service-" + id)?.remove();
+                    } else {
+                        alert("Silinemedi.");
+                    }
+                });
+            });
+        });
+    </script>
+}

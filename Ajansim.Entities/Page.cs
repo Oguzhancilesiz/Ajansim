@@ -16,6 +16,6 @@ namespace Ajansim.Entities
         public string MetaDescription { get; set; }                     // İçerik (HTML/metin)
         public string MetaKeyword { get; set; }                     // İçerik (HTML/metin)
 
-        public ICollection<Media> MediaFiles { get; set; }           // Sayfaya bağlı görseller/videolar
+        public ICollection<Media>? MediaFiles { get; set; }           // Sayfaya bağlı görseller/videolar
     }
 }

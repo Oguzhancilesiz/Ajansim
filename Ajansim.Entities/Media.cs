@@ -31,5 +31,12 @@ namespace Ajansim.Entities
 
         public Guid? BlogPostId { get; set; }
         public BlogPost BlogPost { get; set; }
+
+        public Guid? BrandId { get; set; }
+        public Brand Brand { get; set; }
+
+        public Guid? SiteInfoId { get; set; }
+        public SiteInfo SiteInfo { get; set; }
+
     }
 }

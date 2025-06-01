@@ -39,7 +39,7 @@ namespace Ajansim.Services
                         ID = x.Category.ID,
                         Name = x.Category.Name
                     },
-                    MediaFiles = x.MediaFiles.Select(m => new MediaDTO
+                    MediaFiles = x.MediaFiles.Where(x=>x.Status == Status.Active).Select(m => new MediaDTO
                     {
                         ID = m.ID,
                         Url = m.Url,

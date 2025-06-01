@@ -14,6 +14,13 @@ namespace Ajansim.WebUI
             builder.Services.AddScoped<IBlogPostService, BlogPostService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IMediaService, MediaService>();
+            builder.Services.AddScoped<IPageService, PageService>();
+            builder.Services.AddScoped<IPortfolioItemService, PortfolioService>();
+            builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
+            builder.Services.AddScoped<IService, ServiceService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IFAQService, FAQService>();
+            builder.Services.AddScoped<IContactFormService, ContactFormService>();
 
 
             var app = builder.Build();
@@ -39,7 +46,7 @@ namespace Ajansim.WebUI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "areas",
+                    name: "Areas",
                     pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
                 endpoints.MapControllerRoute(

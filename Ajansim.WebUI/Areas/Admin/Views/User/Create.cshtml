@@ -1,0 +1,95 @@
+﻿@model Ajansim.WebUI.Areas.Admin.ViewModels.UserViewModel
+@{
+    ViewBag.Title = "Yeni Kullanıcı Ekle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form method="post" action="/admin/user/create">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Ad Soyad</label>
+        <input name="FullName" class="form-control" value="@Model?.FullName" required />
+        <span class="text-danger" asp-validation-for="FullName"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">E-Posta</label>
+        <input name="Email" type="email" class="form-control" value="@Model?.Email" required />
+        <span class="text-danger" asp-validation-for="Email"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Şifre</label>
+        <input name="Password" type="password" class="form-control" required />
+        <span class="text-danger" asp-validation-for="Password"></span>
+        <small class="form-text text-muted">
+            Şifreniz en az 6 karakter olmalı. Büyük harf, küçük harf ve rakam içermesi önerilir.
+        </small>
+        <div class="progress mt-2" style="height: 8px;">
+            <div id="passwordStrengthBar" class="progress-bar" style="width: 0%"></div>
+        </div>
+        <small id="passwordStrengthText" class="form-text"></small>
+
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Şifre (Tekrar)</label>
+        <input name="ConfirmPassword" type="password" class="form-control" required />
+        <span class="text-danger" asp-validation-for="ConfirmPassword"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Rol</label>
+        <select name="Role" class="form-select" required>
+            <option value="">Rol Seçin</option>
+            @foreach (var role in Enum.GetValues(typeof(Ajansim.Core.Enums.UserRole)))
+            {
+                <option value="@role" @(role.ToString() == Model?.Role.ToString() ? "selected" : "")>@role</option>
+            }
+        </select>
+        <span class="text-danger" asp-validation-for="Role"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+    <a href="/admin/user" class="btn btn-secondary">İptal</a>
+</form>
+@section Scripts {
+    <script>
+        const passwordInput = document.querySelector('input[name="Password"]');
+        const bar = document.getElementById("passwordStrengthBar");
+        const label = document.getElementById("passwordStrengthText");
+
+        if (passwordInput && bar && label) {
+            passwordInput.addEventListener("input", function () {
+                const value = this.value;
+                const score = calculateStrength(value);
+                updateBar(score);
+            });
+        }
+
+        function calculateStrength(password) {
+            let score = 0;
+            if (!password) return 0;
+            if (password.length >= 6) score += 1;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+            if (/\d/.test(password)) score += 1;
+            if (/[\W_]/.test(password)) score += 1; // özel karakter
+
+            return score;
+        }
+
+        function updateBar(score) {
+            const levels = ["Çok Zayıf", "Zayıf", "Orta", "Güçlü", "Çok Güçlü"];
+            const colors = ["#dc3545", "#fd7e14", "#ffc107", "#198754", "#157347"];
+            const percent = [10, 30, 50, 75, 100];
+
+            bar.style.width = percent[score] + "%";
+            bar.style.backgroundColor = colors[score];
+            label.textContent = levels[score];
+            label.style.color = colors[score];
+        }
+    </script>
+}

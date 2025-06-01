@@ -1,0 +1,116 @@
+﻿@model List<Ajansim.Entities.ContactForm>
+@{
+    ViewBag.Title = "Gelen Mesajlar";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@ViewBag.Title</h2>
+    <div>
+        <a href="/admin/contactform/index?filter=all"
+           class="btn btn-sm @(ViewBag.Filter == "all" ? "btn-primary" : "btn-outline-primary") me-2">
+            Tüm Mesajlar
+        </a>
+        <a href="/admin/contactform/index?filter=unread"
+           class="btn btn-sm @(ViewBag.Filter == "unread" ? "btn-primary" : "btn-outline-primary")">
+            Sadece Okunmamışlar
+        </a>
+    </div>
+</div>
+
+<h2 class="mb-4">@ViewBag.Title</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Email</th>
+            <th>Mesaj</th>
+            <th>Gönderim Tarihi</th>
+            <th style="width:150px;">İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var msg in Model)
+        {
+            var rowClass = msg.Status == Ajansim.Core.Enums.Status.Active ? "fw-bold text-dark" : "text-muted";
+
+            <tr id="contact-@msg.ID" class="@rowClass">
+                <td>@msg.FullName</td>
+                <td>@msg.Email</td>
+                <td>@(msg.Message.Length > 50 ? msg.Message.Substring(0, 50) + "..." : msg.Message)</td>
+                <td>@msg.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>
+                    <button class="btn btn-sm btn-info btn-detail" data-id="@msg.ID"
+                            data-name="@msg.FullName"
+                            data-email="@msg.Email"
+                            data-message="@msg.Message">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    @if (msg.Status == Ajansim.Core.Enums.Status.Active)
+                    {
+                        <button class="btn btn-sm btn-secondary btn-read" data-id="@msg.ID">
+                            <i class="bi bi-check2-square"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Mesaj Detayı</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Ad Soyad:</strong> <span id="modalName"></span></p>
+                <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                <hr />
+                <p id="modalMessage" class="text-break"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Mesaj detayı modalı
+        document.querySelectorAll(".btn-detail").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.getElementById("modalName").textContent = btn.dataset.name;
+                document.getElementById("modalEmail").textContent = btn.dataset.email;
+                document.getElementById("modalMessage").textContent = btn.dataset.message;
+                const modal = new bootstrap.Modal(document.getElementById("messageModal"));
+                modal.show();
+            });
+        });
+
+        // Okundu olarak işaretleme
+        document.querySelectorAll(".btn-read").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.id;
+
+                fetch("/admin/contactform/markasread", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(id)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const row = document.getElementById("contact-" + id);
+                        row.classList.remove("fw-bold", "text-dark");
+                        row.classList.add("text-muted");
+                        btn.remove();
+                    } else {
+                        alert("İşaretleme başarısız oldu.");
+                    }
+                });
+            });
+        });
+    </script>
+}

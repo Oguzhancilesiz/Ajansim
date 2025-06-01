@@ -1,20 +1,325 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
 <head>
-    <title>Admin Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <title>Admin Paneli</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background-color: #343a40;
+            padding-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+            .sidebar a {
+                color: #ccc;
+                text-decoration: none;
+                display: block;
+                padding: 0.75rem 1rem;
+                transition: 0.3s;
+            }
+
+                .sidebar a:hover {
+                    background-color: #495057;
+                    color: #fff;
+                }
+
+            .sidebar.collapsed {
+                width: 0;
+                overflow: hidden;
+                padding: 0;
+            }
+
+        .topbar {
+            background-color: #f8f9fa;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            right: 1rem;
+            top: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: .25rem;
+            display: none;
+        }
+
+            .profile-dropdown.show {
+                display: block;
+            }
+
+        #toggle-sidebar {
+            border: none;
+            background: none;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #0d6efd;
+            color: #fff;
+            font-weight: bold;
+        }
+
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/admin">Ajansım Admin</a>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-2 sidebar d-md-block d-none">
+                <a href="/Admin/Home/Index" class="nav-link"><i class="bi bi-house"></i> Dashboard</a>
+
+                <a href="/Admin/Page/Index" class="nav-link"><i class="bi bi-file-earmark-text"></i> Sayfalar</a>
+                <a href="/Admin/BlogPost/Index" class="nav-link"><i class="bi bi-journal-text"></i> Bloglar</a>
+                <a href="/Admin/PortfolioItem/Index" class="nav-link"><i class="bi bi-briefcase"></i> Portfolyolar</a>
+                <a href="/Admin/Service/Index" class="nav-link"><i class="bi bi-hammer"></i> Hizmetler</a>
+                <a href="/Admin/TeamMember/Index" class="nav-link"><i class="bi bi-people"></i> Ekip Üyeleri</a>
+                <a href="/Admin/User/Index" class="nav-link"><i class="bi bi-person-gear"></i> Kullanıcılar</a>
+                <a href="/Admin/Media/Index" class="nav-link"><i class="bi bi-image"></i> Medyalar</a>
+                <a href="/Admin/FAQ/Index" class="nav-link"><i class="bi bi-question-circle"></i> S.S.S</a>
+                <a href="/Admin/ContactForm/Index" class="nav-link"><i class="bi bi-envelope"></i> Gelen Mesajlar</a>
+                <a href="/Admin/Settings" class="nav-link"><i class="bi bi-gear"></i> Ayarlar</a>
+            </nav>
+
+
+
+
+            <!-- Content -->
+            <main class="col-md-10 ms-sm-auto col-12">
+                <!-- Topbar -->
+                <div class="topbar d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <button id="toggle-sidebar" class="d-md-none">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <h5 class="mb-0">Yönetim Paneli</h5>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle" id="profileDropdown" onclick="toggleProfileMenu()">
+                            <i class="bi bi-person-circle"></i> Admin Adı
+                        </button>
+                        <div id="profileMenu" class="profile-dropdown">
+                            <a class="dropdown-item p-2" href="/admin/userform/index">
+                                <i class="bi bi-envelope"></i> Mesajlar
+                                <span id="messageCountContainer"></span>
+                            </a>
+
+                            <a class="dropdown-item p-2" href="#"><i class="bi bi-person"></i> Profilim</a>
+                            <a class="dropdown-item p-2" href="#"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sayfa İçeriği -->
+                <div class="p-4">
+                    @RenderBody()
+                </div>
+            </main>
         </div>
-    </nav>
-
-    <div class="container mt-4">
-        @RenderBody()
     </div>
-    @RenderSection("Scripts", required: false)
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleProfileMenu() {
+            const menu = document.getElementById("profileMenu");
+            menu.classList.toggle("show");
+        }
+
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest(".dropdown")) {
+                document.getElementById("profileMenu").classList.remove("show");
+            }
+        });
+
+        document.getElementById("toggle-sidebar").addEventListener("click", function () {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function enableUploadProgressForms() {
+            document.querySelectorAll("form.upload-with-progress").forEach(form => {
+                form.addEventListener("submit", function (e) {
+                    const fileInput = form.querySelector("input[type='file']");
+                    const hasFiles = fileInput && fileInput.files.length > 0;
+
+                    if (!hasFiles) return; // medya yoksa formu normal gönder
+
+                    e.preventDefault(); // formu durdur
+
+                    const formData = new FormData(form);
+                    const xhr = new XMLHttpRequest();
+
+                    Swal.fire({
+                        title: "Yükleniyor...",
+                        html: `
+                            <div class="progress" style="height: 20px;">
+                                <div id="uploadProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%">0%</div>
+                            </div>
+                        `,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    xhr.upload.addEventListener("progress", function (event) {
+                        if (event.lengthComputable) {
+                            const percent = Math.round((event.loaded / event.total) * 100);
+                            const bar = document.getElementById("uploadProgressBar");
+                            if (bar) {
+                                bar.style.width = percent + "%";
+                                bar.innerText = percent + "%";
+                            }
+                        }
+                    });
+
+                    xhr.onload = function () {
+                        if (xhr.status >= 200 && xhr.status < 400) {
+                            // 🟢 Yönlendirmeyi responseURL ile uygula
+                            window.location.replace(xhr.responseURL);
+                        } else {
+                            Swal.fire("Hata", "Sunucudan yanıt alınamadı.", "error");
+                        }
+                    };
+
+                    xhr.onerror = function () {
+                        Swal.fire("Hata", "Yükleme başarısız oldu.", "error");
+                    };
+
+                    xhr.open("POST", form.action);
+                    xhr.send(formData);
+                });
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", enableUploadProgressForms);
+    </script>
+
+@*     <script>
+        function enableUploadProgressForms() {
+            document.querySelectorAll("form.upload-with-progress").forEach(form => {
+                form.addEventListener("submit", function (e) {
+                    const hasFiles = form.querySelector("input[type='file']")?.files.length > 0;
+                    if (!hasFiles) return; // dosya yoksa normal submit
+
+                    e.preventDefault();
+
+                    const formData = new FormData(form);
+                    const xhr = new XMLHttpRequest();
+
+                    Swal.fire({
+                        title: "Yükleniyor...",
+                        html: `
+                            <div class="progress" style="height: 20px;">
+                                <div id="uploadProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%">0%</div>
+                            </div>
+                        `,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    xhr.upload.addEventListener("progress", function (event) {
+                        if (event.lengthComputable) {
+                            const percent = Math.round((event.loaded / event.total) * 100);
+                            const bar = document.getElementById("uploadProgressBar");
+                            if (bar) {
+                                bar.style.width = percent + "%";
+                                bar.innerText = percent + "%";
+                            }
+                        }
+                    });
+
+                    xhr.onload = function () {
+                        if (xhr.status === 200) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Yükleme tamamlandı!",
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                // yeniden yönlendir (sunucudan gelene göre değişebilir)
+                                const redirect = form.dataset.redirect || window.location.href;
+                                window.location.href = redirect;
+                            });
+                        } else {
+                            Swal.fire("Hata", "Yükleme sırasında bir sorun oluştu.", "error");
+                        }
+                    };
+
+                    xhr.open("POST", form.action);
+                    xhr.send(formData);
+                });
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", enableUploadProgressForms);
+    </script>
+ *@
+
+    <script>
+        fetch('/admin/layout/GetUnreadMessageCount')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("messageCountContainer").innerHTML = html;
+            });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Aktif menü belirleme
+            const currentPath = window.location.pathname.toLowerCase();
+            document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+                if (currentPath.startsWith(link.getAttribute("href").toLowerCase())) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+    <script>
+        const sidebar = document.getElementById("sidebar");
+        const toggleBtn = document.getElementById("toggle-sidebar");
+
+        // İlk yüklenişte localStorage'a göre sidebar aç/kapa
+        if (localStorage.getItem("sidebar-collapsed") === "true") {
+            sidebar.classList.add("collapsed");
+        }
+
+        toggleBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
+            localStorage.setItem("sidebar-collapsed", sidebar.classList.contains("collapsed"));
+        });// Mobilde link tıklanınca sidebar'ı kapat
+        document.querySelectorAll(".sidebar a").forEach(link => {
+            link.addEventListener("click", function () {
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add("collapsed");
+                    localStorage.setItem("sidebar-collapsed", "true");
+                }
+            });
+        });
+
+    </script>
+
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
+

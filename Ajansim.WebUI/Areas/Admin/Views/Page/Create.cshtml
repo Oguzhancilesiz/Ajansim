@@ -1,0 +1,49 @@
+﻿@model Ajansim.WebUI.Areas.Admin.ViewModels.PageViewModel
+@{
+    ViewBag.Title = "Yeni Sayfa Oluştur";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form class="upload-with-progress" asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Başlık</label>
+        <input name="Title" class="form-control" value="@Model?.Title" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Alt Başlık</label>
+        <input name="SubTitle" class="form-control" value="@Model?.SubTitle" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Slug</label>
+        <input name="Slug" class="form-control" value="@Model?.Slug" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">İçerik</label>
+        <textarea name="Content" class="form-control" rows="6">@Model?.Content</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Meta Açıklama</label>
+        <input name="MetaDescription" class="form-control" value="@Model?.MetaDescription" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Meta Anahtar Kelimeler</label>
+        <input name="MetaKeyword" class="form-control" value="@Model?.MetaKeyword" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Görseller</label>
+        <input type="file" name="UploadedMedia" multiple class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>

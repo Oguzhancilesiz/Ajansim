@@ -1,0 +1,99 @@
+﻿@model Ajansim.WebUI.Areas.Admin.ViewModels.PageViewModel
+@{
+    ViewBag.Title = "Sayfa Güncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Sayfa Güncelle</h2>
+
+<form class="upload-with-progress" action="/admin/page/edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="ID" value="@Model.ID" />
+
+    <div class="mb-3">
+        <label class="form-label">Başlık</label>
+        <input type="text" name="Title" class="form-control" value="@Model.Title" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Alt Başlık</label>
+        <input type="text" name="SubTitle" class="form-control" value="@Model.SubTitle" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Slug</label>
+        <input type="text" name="Slug" class="form-control" value="@Model.Slug" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">İçerik</label>
+        <textarea name="Content" class="form-control" rows="6">@Model.Content</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Meta Açıklama</label>
+        <input type="text" name="MetaDescription" class="form-control" value="@Model.MetaDescription" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Meta Anahtar Kelimeler</label>
+        <input type="text" name="MetaKeyword" class="form-control" value="@Model.MetaKeyword" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Yeni Görsel Yükle</label>
+        <input type="file" name="UploadedMedia" multiple class="form-control" />
+    </div>
+
+    @if (Model.MediaFiles != null && Model.MediaFiles.Any())
+    {
+        <div class="mb-3">
+            <label class="form-label">Mevcut Görseller</label>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var media in Model.MediaFiles)
+                {
+                    <div class="position-relative border p-1" id="media-@media.ID">
+                        <img src="@media.Url" width="80" class="img-thumbnail" />
+                        <button type="button"
+                                class="btn btn-sm btn-danger position-absolute top-0 end-0 delete-media"
+                                data-id="@media.ID">
+                            ✖
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a href="/admin/page" class="btn btn-secondary">İptal</a>
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".delete-media").forEach(button => {
+            button.addEventListener("click", () => {
+                const id = button.dataset.id;
+
+                if (!confirm("Bu görseli silmek istiyor musunuz?")) return;
+
+                fetch("/admin/page/softdeletemedia", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(id) // ❗sadece string gönderiyoruz
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("media-" + id)?.remove();
+                    } else {
+                        alert("Silinemedi.");
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -25,7 +25,8 @@ namespace Ajansim.Context
         public DbSet<Service> Services { get; set; }
         public DbSet<TeamMember> TeamMembers { get; set; }
         public DbSet<User> Users { get; set; }
-
+        public DbSet<SiteInfo> SiteInfos { get; set; }
+        public DbSet<Brand> Brands { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -64,6 +65,28 @@ namespace Ajansim.Context
             }
 
             return base.SaveChanges();
+        }
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries<BaseEntity>();
+
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    if (entry.Entity.ID == Guid.Empty)
+                        entry.Entity.ID = Guid.NewGuid();
+
+                    entry.Entity.CreatedAt = DateTime.Now;
+                    entry.Entity.Status = Status.Active;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = DateTime.Now;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
         //public override int SaveChanges()

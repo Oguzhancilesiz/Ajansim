@@ -1,0 +1,86 @@
+﻿@model Ajansim.WebUI.Areas.Admin.ViewModels.PortfolioItemViewModel
+@{
+    ViewBag.Title = "Portfolyo Güncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Portfolyo Güncelle</h2>
+
+<form class="upload-with-progress" action="/admin/portfolioitem/edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ID" value="@Model.ID" />
+
+    <div class="mb-3">
+        <label class="form-label">Başlık</label>
+        <input type="text" name="Title" class="form-control" value="@Model.Title" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Açıklama</label>
+        <textarea name="Description" class="form-control" rows="4">@Model.Description</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Ekip Üyesi</label>
+        <select name="TeamMemberId" class="form-select">
+            <option value="">Seçiniz</option>
+            @foreach (var member in Model.AvailableTeamMembers ?? new List<Ajansim.Entities.TeamMember>())
+            {
+                <option value="@member.ID" @(member.ID == Model.TeamMemberId ? "selected" : "")>
+                    @member.FullName
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Yeni Görseller</label>
+        <input type="file" name="UploadedMedia" multiple class="form-control" />
+    </div>
+
+    @if (Model.MediaFiles != null && Model.MediaFiles.Any())
+    {
+        <div class="mb-3">
+            <label class="form-label">Mevcut Görseller</label>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var media in Model.MediaFiles)
+                {
+                    <div class="position-relative border p-1" id="media-@media.ID">
+                        <img src="@media.Url" width="80" class="img-thumbnail" />
+                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 delete-media" data-id="@media.ID">✖</button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+    <a href="/admin/portfolioitem" class="btn btn-secondary">İptal</a>
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".delete-media").forEach(button => {
+            button.addEventListener("click", () => {
+                const id = button.dataset.id;
+                if (!confirm("Bu görseli silmek istediğinize emin misiniz?")) return;
+
+                fetch("/admin/portfolioitem/softdeletemedia", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(id)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("media-" + id)?.remove();
+                    } else {
+                        alert("Silme işlemi başarısız oldu.");
+                    }
+                });
+            });
+        });
+    </script>
+}

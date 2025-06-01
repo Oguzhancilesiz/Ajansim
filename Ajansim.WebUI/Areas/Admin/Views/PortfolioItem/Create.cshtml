@@ -1,0 +1,42 @@
+﻿@model Ajansim.WebUI.Areas.Admin.ViewModels.PortfolioItemViewModel
+@{
+    ViewBag.Title = "Yeni Portfolyo Ekle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Yeni Portfolyo</h2>
+
+<form class="upload-with-progress" action="/admin/portfolioitem/create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Başlık</label>
+        <input type="text" name="Title" class="form-control" value="@Model?.Title" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Açıklama</label>
+        <textarea name="Description" class="form-control" rows="4">@Model?.Description</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Ekip Üyesi</label>
+        <select name="TeamMemberId" class="form-select">
+            <option value="">Seçiniz</option>
+            @foreach (var member in Model.AvailableTeamMembers ?? new List<Ajansim.Entities.TeamMember>())
+            {
+                <option value="@member.ID" @(member.ID == Model.TeamMemberId ? "selected" : "")>
+                    @member.FullName
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Görseller</label>
+        <input type="file" name="UploadedMedia" multiple class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+    <a href="/admin/portfolioitem" class="btn btn-secondary">İptal</a>
+</form>

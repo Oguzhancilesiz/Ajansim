@@ -1,4 +1,137 @@
 ﻿@{
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "Yönetim Paneli";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@ViewBag.Title</h2>
+    <button id="darkToggle" class="btn btn-outline-dark">
+        <i class="bi bi-moon-stars"></i> Dark Mode
+    </button>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-start border-primary border-4 shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h6 class="text-muted">Bloglar</h6>
+                    <h4 class="fw-bold">@ViewBag.BlogCount</h4>
+                </div>
+                <i class="bi bi-journal-text text-primary fs-1"></i>
+            </div>
+            <a href="/admin/blogpost" class="text-decoration-none text-primary text-center d-block pb-2">Görüntüle</a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-start border-success border-4 shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h6 class="text-muted">Portfolyolar</h6>
+                    <h4 class="fw-bold">@ViewBag.PortfolioCount</h4>
+                </div>
+                <i class="bi bi-briefcase text-success fs-1"></i>
+            </div>
+            <a href="/admin/portfolioitem" class="text-decoration-none text-success text-center d-block pb-2">Görüntüle</a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-start border-dark border-4 shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h6 class="text-muted">Kullanıcılar</h6>
+                    <h4 class="fw-bold">@ViewBag.UserCount</h4>
+                </div>
+                <i class="bi bi-person-gear text-dark fs-1"></i>
+            </div>
+            <a href="/admin/user" class="text-decoration-none text-dark text-center d-block pb-2">Görüntüle</a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-start border-danger border-4 shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h6 class="text-muted">Okunmamış Mesaj</h6>
+                    <h4 class="fw-bold">@ViewBag.UnreadMessages</h4>
+                </div>
+                <i class="bi bi-envelope text-danger fs-1"></i>
+            </div>
+            <a href="/admin/contactform" class="text-decoration-none text-danger text-center d-block pb-2">Mesajlara Git</a>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4" />
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                Genel Dağılım (Grafik)
+            </div>
+            <div class="card-body">
+                <canvas id="summaryChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        fetch("/admin/dashboard/getchartdata")
+            .then(res => res.json())
+            .then(data => {
+                const ctx = document.getElementById("summaryChart").getContext("2d");
+                new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: "Kayıt Sayısı",
+                            data: data.values,
+                            backgroundColor: "#0d6efd"
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            });
+    </script>
+
+    <script>
+        // DARK MODE toggle
+        const body = document.body;
+        const toggleBtn = document.getElementById("darkToggle");
+
+        function applyTheme() {
+            if (localStorage.getItem("theme") === "dark") {
+                body.classList.add("bg-dark", "text-white");
+                toggleBtn.classList.remove("btn-outline-dark");
+                toggleBtn.classList.add("btn-light");
+                toggleBtn.innerHTML = '<i class="bi bi-sun"></i> Light Mode';
+            } else {
+                body.classList.remove("bg-dark", "text-white");
+                toggleBtn.classList.remove("btn-light");
+                toggleBtn.classList.add("btn-outline-dark");
+                toggleBtn.innerHTML = '<i class="bi bi-moon-stars"></i> Dark Mode';
+            }
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            const current = localStorage.getItem("theme");
+            localStorage.setItem("theme", current === "dark" ? "light" : "dark");
+            applyTheme();
+        });
+
+        document.addEventListener("DOMContentLoaded", applyTheme);
+    </script>
 }

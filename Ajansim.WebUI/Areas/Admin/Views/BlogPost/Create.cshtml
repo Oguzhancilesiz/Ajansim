@@ -1,116 +1,53 @@
-﻿@model Ajansim.Entities.BlogPost
-
+﻿@model BlogPostViewModel
 @{
-    ViewBag.Title = "Yeni Blog Yazısı";
+    ViewBag.Title = "Yeni Blog Yazısı Ekle";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 class="mb-4">Yeni Blog Yazısı Ekle</h2>
+<h2>@ViewBag.Title</h2>
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
+<form class="upload-with-progress" method="post" enctype="multipart/form-data" action="/admin/blogpost/create">
+    @Html.AntiForgeryToken()
+
     <div class="mb-3">
-        <label accesskey="" class="form-label">Başlık</label>
-        <input asp-for="Title" name="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
+        <label class="form-label">Başlık</label>
+        <input type="text" name="Title" class="form-control" value="@Model?.Title" required />
     </div>
 
     <div class="mb-3">
-        <label asp-for="Summary" class="form-label">Özet</label>
-        <textarea asp-for="Summary" name="Summary" class="form-control" rows="2"></textarea>
-        <span asp-validation-for="Summary" class="text-danger"></span>
+        <label class="form-label">Özet</label>
+        <textarea name="Summary" class="form-control" rows="2" required>@Model?.Summary</textarea>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Content" class="form-label">İçerik</label>
-        <textarea asp-for="Content" name="Content" class="form-control" rows="6"></textarea>
-        <span asp-validation-for="Content" class="text-danger"></span>
+        <label class="form-label">İçerik</label>
+        <textarea name="Content" class="form-control" rows="6" required>@Model?.Content</textarea>
     </div>
-
-    <select name="CategoryId" class="form-select">
-        <option value="">Kategori Seçin</option> <!-- value="" önemli -->
-        @foreach (var item in (List<SelectListItem>)ViewBag.Categories)
-        {
-            var isSelected = item.Value == Model?.CategoryId.ToString() ? "selected" : "";
-            <option value="@item.Value" @isSelected>@item.Text</option>
-        }
-    </select>
-    <span asp-validation-for="CategoryId" class="text-danger"></span>
-
-
-
-
-
-
-
 
     <div class="mb-3">
-        <label class="form-label">Görsel Yükle (birden fazla seçebilirsiniz)</label>
-        <input type="file" name="files" multiple class="form-control" />
+        <label class="form-label">Yayın Tarihi</label>
+        <input type="datetime-local" name="PublishedAt" class="form-control"
+               value="@Model?.PublishedAt.ToString("yyyy-MM-ddTHH:mm")" required />
     </div>
-
-
-    <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-success">Kaydet</button>
-        <a asp-action="Index" class="btn btn-secondary">İptal</a>
-    </div>
-</form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
-
-
-@* @model Ajansim.Entities.BlogPost
-
-@{
-    ViewBag.Title = "Yeni Blog Yazısı";
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-}
-
-
-
-<form asp-action="Create" method="post" enctype="multipart/form-data">
 
     <div class="mb-3">
-        <label asp-for="Title" class="form-label">Başlık</label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Summary" class="form-label">Özet</label>
-        <input asp-for="Summary" class="form-control" />
-        <span asp-validation-for="Summary" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Content" class="form-label">İçerik</label>
-        <input asp-for="Content" class="form-control"></input>
-        <span asp-validation-for="Content" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="CategoryId" class="form-label">Kategori</label>
-        <select name="CategoryId" class="form-select">
-            <option disabled @(Model.CategoryId == Guid.Empty ? "selected" : "")>Kategori Seçin</option>
-
-            @foreach (var item in ViewBag.Categories)
+        <label class="form-label">Kategori</label>
+        <select name="CategoryId" class="form-select" required>
+            <option value="">Kategori Seçin</option>
+            @foreach (var item in Model.CategoryList ?? new List<SelectListItem>())
             {
                 <option value="@item.Value" @(item.Value == Model.CategoryId.ToString() ? "selected" : "")>
                     @item.Text
                 </option>
             }
         </select>
-        <span asp-validation-for="CategoryId" class="text-danger"></span> ✅ olmalıydı
-
     </div>
 
-   
-
-
-    <input type="file" name="File" multiple class="form-control" />
+    <div class="mb-3">
+        <label class="form-label">Görseller</label>
+        <input type="file" name="UploadedMedia" multiple class="form-control" />
+    </div>
 
     <button type="submit" class="btn btn-success">Kaydet</button>
+    <a href="/admin/blogpost" class="btn btn-secondary">İptal</a>
 </form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
- *@

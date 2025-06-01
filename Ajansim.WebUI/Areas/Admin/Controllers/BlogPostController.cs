@@ -1,148 +1,196 @@
 ﻿using Ajansim.Contracts;
 using Ajansim.Core.Enums;
-using Ajansim.DTO;
 using Ajansim.Entities;
 using Ajansim.Services;
 using Ajansim.WebUI.Areas.Admin.ViewModels;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace Ajansim.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class BlogPostController : Controller
     {
-        private readonly IBlogPostService _blogPostService;
+        private readonly IBlogPostService _blogService;
         private readonly ICategoryService _categoryService;
         private readonly IMediaService _mediaService;
         private readonly IWebHostEnvironment _env;
 
         public BlogPostController(
-            IBlogPostService blogPostService,
+            IBlogPostService blogService,
             ICategoryService categoryService,
             IMediaService mediaService,
             IWebHostEnvironment env)
         {
-            _blogPostService = blogPostService;
+            _blogService = blogService;
             _categoryService = categoryService;
             _mediaService = mediaService;
             _env = env;
         }
 
-        // ✅ DTO kullanarak listeleme
+        // ✅ INDEX
         public IActionResult Index()
         {
-            var blogs = _blogPostService.GetAllDTO();
-            return View(blogs);
+            var posts = _blogService.GetAll()
+                .OrderByDescending(x => x.CreatedAt)
+                .ToList();
+
+            foreach (var post in posts)
+            {
+                post.Category = _categoryService.GetById(post.CategoryId);
+                post.MediaFiles = _mediaService.GetMediaByEntityAsync(post.ID, "BlogPost").Result;
+            }
+
+            return View(posts);
         }
 
-        // ✅ Yeni oluşturma
+        // ✅ CREATE GET
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Categories = GetCategoryList();
-            return View(new BlogPost());
+            var vm = new BlogPostViewModel
+            {
+                CategoryList = _categoryService.GetAll()
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.ID.ToString(),
+                        Text = x.Name
+                    }).ToList(),
+                PublishedAt = DateTime.Now
+            };
+
+            return View(vm);
         }
 
+        // ✅ CREATE POST
         [HttpPost]
-        public async Task<IActionResult> Create(BlogPost blogPost)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(BlogPostViewModel vm)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = GetCategoryList();
-                return View(blogPost);
+                vm.CategoryList = _categoryService.GetAll()
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.ID.ToString(),
+                        Text = x.Name
+                    }).ToList();
+                return View(vm);
             }
 
-            blogPost.ID = Guid.NewGuid();
-            blogPost.Status = Status.Active;
-            blogPost.CreatedAt = DateTime.Now;
-            blogPost.UpdatedAt = DateTime.Now;
-            blogPost.PublishedAt = DateTime.Now;
-
-            _blogPostService.Add(blogPost);
-
-            if (Request.Form.Files.Count > 0)
+            var blog = new BlogPost
             {
-                await _mediaService.UploadMediaAsync(
-                    files: Request.Form.Files,
-                    mediaType: MediaType.Image,
-                    webRootPath: _env.WebRootPath,
-                    blogPostId: blogPost.ID
+                ID = Guid.NewGuid(),
+                Title = vm.Title,
+                Summary = vm.Summary,
+                Content = vm.Content,
+                CategoryId = vm.CategoryId,
+                PublishedAt = vm.PublishedAt,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                Status = Status.Active
+            };
+
+            _blogService.Add(blog);
+
+            if (vm.UploadedMedia != null && vm.UploadedMedia.Any())
+            {
+                await _mediaService.UploadMediaAsyncFromList(
+                    vm.UploadedMedia,
+                    MediaType.Image,
+                    _env.WebRootPath,
+                    blogPostId: blog.ID
                 );
             }
-
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var blog = _blogPostService.GetById(id);
+            var blog = _blogService.GetById(id);
             if (blog == null) return NotFound();
 
-            ViewBag.Categories = GetCategoryList();
-            ViewBag.MediaFiles = await _mediaService.GetMediaByEntityAsync(id, "BlogPost");
+            var vm = new BlogPostViewModel
+            {
+                ID = blog.ID,
+                Title = blog.Title,
+                Summary = blog.Summary,
+                Content = blog.Content,
+                PublishedAt = blog.PublishedAt,
+                CategoryId = blog.CategoryId,
+                CreatedAt = blog.CreatedAt,
+                UpdatedAt = blog.UpdatedAt,
+                CategoryList = _categoryService.GetAll()
+                    .Select(x => new SelectListItem { Value = x.ID.ToString(), Text = x.Name })
+                    .ToList(),
+                MediaFiles = await _mediaService.GetMediaByEntityAsync(blog.ID, "BlogPost")
+            };
 
-            return View(blog);
+            return View(vm);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(BlogPost blogPost)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(BlogPostViewModel vm)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = GetCategoryList();
-                ViewBag.MediaFiles = await _mediaService.GetMediaByEntityAsync(blogPost.ID, "BlogPost");
-                return View(blogPost);
+                vm.CategoryList = _categoryService.GetAll()
+                    .Select(x => new SelectListItem { Value = x.ID.ToString(), Text = x.Name })
+                    .ToList();
+
+                vm.MediaFiles = await _mediaService.GetMediaByEntityAsync(vm.ID, "BlogPost");
+
+                return View(vm);
             }
 
-            blogPost.UpdatedAt = DateTime.Now;
-            _blogPostService.Update(blogPost);
+            var blog = _blogService.GetById(vm.ID);
+            if (blog == null) return NotFound();
 
-            if (Request.Form.Files.Count > 0)
+            blog.Title = vm.Title;
+            blog.Summary = vm.Summary;
+            blog.Content = vm.Content;
+            blog.CategoryId = vm.CategoryId;
+            blog.PublishedAt = vm.PublishedAt;
+            blog.UpdatedAt = DateTime.Now;
+
+            _blogService.Update(blog);
+
+            if (vm.UploadedMedia != null && vm.UploadedMedia.Any())
             {
-                await _mediaService.UploadMediaAsync(
-                    files: Request.Form.Files,
+                await _mediaService.UploadMediaAsyncFromList(
+                    files: vm.UploadedMedia,
                     mediaType: MediaType.Image,
                     webRootPath: _env.WebRootPath,
-                    blogPostId: blogPost.ID
+                    blogPostId: blog.ID
                 );
             }
 
             return RedirectToAction("Index");
         }
-        [HttpPost]
-        public async Task<IActionResult> DeleteMedia(Guid mediaId)
+        [HttpGet]
+        [Route("admin/blogPost/softdelete/{id}")]
+        public IActionResult SoftDelete(Guid id)
         {
-            var result = await _mediaService.DeleteMediaByIdAsync(mediaId, _env.WebRootPath);
-            return Json(new { success = result });
-        }
-
-
-        // ✅ Soft Delete
-        public IActionResult Delete(Guid id)
-        {
-            var blog = _blogPostService.GetById(id);
-            if (blog == null) return NotFound();
+            var blog = _blogService.GetById(id);
+            if (blog == null)
+                return NotFound();
 
             blog.Status = Status.Deleted;
             blog.UpdatedAt = DateTime.Now;
-            _blogPostService.Update(blog);
+            _blogService.Update(blog);
 
             return RedirectToAction("Index");
         }
 
-        // 📌 Ortak kategori listesi
-        private List<SelectListItem> GetCategoryList()
+
+        [HttpPost]
+        [Route("admin/blogPost/softdeletemedia")]
+        public async Task<IActionResult> SoftDeleteMedia([FromBody] Guid id)
         {
-            return _categoryService.GetAll()
-                .Select(x => new SelectListItem
-                {
-                    Value = x.ID.ToString(),
-                    Text = x.Name
-                }).ToList();
+            var result = await _mediaService.SoftDeleteMediaAsync(id);
+            return Json(new { success = result });
         }
+
     }
 }

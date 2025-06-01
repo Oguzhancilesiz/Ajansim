@@ -63,6 +63,41 @@ namespace Ajansim.Context.Migrations
                     b.ToTable("BlogPosts");
                 });
 
+            modelBuilder.Entity("Ajansim.Entities.Brand", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Brands");
+                });
+
             modelBuilder.Entity("Ajansim.Entities.Category", b =>
                 {
                     b.Property<Guid>("ID")
@@ -167,6 +202,9 @@ namespace Ajansim.Context.Migrations
                     b.Property<Guid?>("BlogPostId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("BrandId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -192,6 +230,9 @@ namespace Ajansim.Context.Migrations
                     b.Property<Guid?>("ServiceId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("SiteInfoId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -210,11 +251,15 @@ namespace Ajansim.Context.Migrations
 
                     b.HasIndex("BlogPostId");
 
+                    b.HasIndex("BrandId");
+
                     b.HasIndex("PageId");
 
                     b.HasIndex("PortfolioItemId");
 
                     b.HasIndex("ServiceId");
+
+                    b.HasIndex("SiteInfoId");
 
                     b.HasIndex("TeamMemberId");
 
@@ -335,6 +380,91 @@ namespace Ajansim.Context.Migrations
                     b.ToTable("Services");
                 });
 
+            modelBuilder.Entity("Ajansim.Entities.SiteInfo", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FacebookUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FooterText")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("InstagramUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Keywords")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("LinkedInUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("SiteName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Slogan")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TwitterUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("YouTubeUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("SiteInfos");
+                });
+
             modelBuilder.Entity("Ajansim.Entities.TeamMember", b =>
                 {
                     b.Property<Guid>("ID")
@@ -446,6 +576,11 @@ namespace Ajansim.Context.Migrations
                         .HasForeignKey("BlogPostId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Ajansim.Entities.Brand", "Brand")
+                        .WithMany("MediaFiles")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Ajansim.Entities.Page", "Page")
                         .WithMany("MediaFiles")
                         .HasForeignKey("PageId")
@@ -461,6 +596,11 @@ namespace Ajansim.Context.Migrations
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Ajansim.Entities.SiteInfo", "SiteInfo")
+                        .WithMany("MediaFiles")
+                        .HasForeignKey("SiteInfoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Ajansim.Entities.TeamMember", "TeamMember")
                         .WithMany("MediaFiles")
                         .HasForeignKey("TeamMemberId")
@@ -468,11 +608,15 @@ namespace Ajansim.Context.Migrations
 
                     b.Navigation("BlogPost");
 
+                    b.Navigation("Brand");
+
                     b.Navigation("Page");
 
                     b.Navigation("PortfolioItem");
 
                     b.Navigation("Service");
+
+                    b.Navigation("SiteInfo");
 
                     b.Navigation("TeamMember");
                 });
@@ -488,6 +632,11 @@ namespace Ajansim.Context.Migrations
                 });
 
             modelBuilder.Entity("Ajansim.Entities.BlogPost", b =>
+                {
+                    b.Navigation("MediaFiles");
+                });
+
+            modelBuilder.Entity("Ajansim.Entities.Brand", b =>
                 {
                     b.Navigation("MediaFiles");
                 });
@@ -508,6 +657,11 @@ namespace Ajansim.Context.Migrations
                 });
 
             modelBuilder.Entity("Ajansim.Entities.Service", b =>
+                {
+                    b.Navigation("MediaFiles");
+                });
+
+            modelBuilder.Entity("Ajansim.Entities.SiteInfo", b =>
                 {
                     b.Navigation("MediaFiles");
                 });

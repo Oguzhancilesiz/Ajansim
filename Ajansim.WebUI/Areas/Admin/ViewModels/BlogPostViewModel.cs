@@ -1,17 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Ajansim.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
-namespace Ajansim.WebUI.Areas.Admin.ViewModels
+public class BlogPostViewModel
 {
-    public class BlogPostViewModel
-    {
-        public string? Title { get; set; }
-        public string? Summary { get; set; }
-        public string? Content { get; set; }
-        public DateTime? PublishedAt { get; set; }
+    public Guid ID { get; set; }
 
-        // Edit için mevcut görseller (opsiyonel)
-        public List<string> ExistingMediaUrls { get; set; } = new();
-        public Guid CategoryId { get; set; }
-        public List<SelectListItem> Categories { get; set; } = new();
-    }
+    [Required(ErrorMessage = "Başlık zorunludur")]
+    public string Title { get; set; }
+
+    [Required(ErrorMessage = "Özet zorunludur")]
+    public string Summary { get; set; }
+
+    [Required(ErrorMessage = "İçerik zorunludur")]
+    public string Content { get; set; }
+
+    [Required(ErrorMessage = "Yayın tarihi zorunludur")]
+    public DateTime PublishedAt { get; set; } = DateTime.Now;
+
+    [Required(ErrorMessage = "Kategori seçilmelidir")]
+    public Guid CategoryId { get; set; }
+
+    public List<SelectListItem>? CategoryList { get; set; } // DropDown için
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+
+    public List<Media>? MediaFiles { get; set; }              // mevcut görseller
+    public List<IFormFile>? UploadedMedia { get; set; }       // yeni yüklenecek görseller
 }

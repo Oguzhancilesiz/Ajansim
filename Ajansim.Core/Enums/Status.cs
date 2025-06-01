@@ -48,5 +48,7 @@ namespace Ajansim.Core.Enums
         AwaitingSupport = 38,
         AwaitingAssistance = 39,
         AwaitingResponseTime = 40,
+        Read = 41,
+        Unread = 42,
     }
 }

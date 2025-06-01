@@ -34,7 +34,9 @@ namespace Ajansim.Services
 
         public IQueryable<T> GetAll()
         {
-            return _table.AsNoTracking().Where(x => x.Status != Status.Deleted);
+            return _table.AsNoTracking()
+                         .Where(x => x.Status != Status.Deleted)
+                         .OrderByDescending(x => x.CreatedAt);
         }
 
         public List<T> GetAllFilter(Func<T, bool> exp, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)

@@ -1,0 +1,27 @@
+﻿@model Ajansim.Entities.FAQ
+@{
+    ViewBag.Title = "SSS Güncelle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form method="post" action="/admin/faq/edit">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ID" value="@Model.ID" />
+
+    <div class="mb-3">
+        <label class="form-label">Soru</label>
+        <input type="text" name="Question" class="form-control" value="@Model.Question" required />
+        <span asp-validation-for="Question" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Cevap</label>
+        <textarea name="Answer" class="form-control" rows="5" required>@Model.Answer</textarea>
+        <span asp-validation-for="Answer" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+    <a href="/admin/faq" class="btn btn-secondary">İptal</a>
+</form>
